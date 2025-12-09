@@ -1,0 +1,28 @@
+<div class="container">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h6 class="m-0">Story Characters</h6>
+    <button class="btn btn-sm btn-primary" (click)="showForm = !showForm">
+      <i class="bi" [ngClass]="showForm ? 'bi-x' : 'bi-plus'"></i> {{ showForm ? 'Cancel' : 'Add Character' }}
+    </button>
+  </div>
+
+  <div *ngIf="showForm" class="mb-3 border p-3 rounded bg-light">
+    <app-character-form [storyId]="storyId" (saved)="onCharacterAdded()"></app-character-form>
+  </div>
+
+  <div class="list-group">
+    <div *ngFor="let char of characters$ | async" class="list-group-item d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center">
+        <div class="rounded-circle me-2" [style.background-color]="char.color || '#ccc'" style="width: 30px; height: 30px;"></div>
+        <div>
+          <span class="fw-bold">{{ char.name }}</span>
+          <small *ngIf="char.isNarrator" class="text-muted ms-2">(Narrator)</small>
+        </div>
+      </div>
+      <!-- Edit/Delete buttons could go here -->
+    </div>
+    <div *ngIf="(characters$ | async)?.length === 0" class="text-center text-muted p-3">
+      No characters yet. Add one to start writing!
+    </div>
+  </div>
+</div>

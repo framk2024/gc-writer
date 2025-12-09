@@ -1,0 +1,48 @@
+<div class="container min-vh-100 d-flex align-items-center justify-content-center">
+  <div class="card shadow-lg border-0" style="max-width: 500px; width: 100%; border-radius: 1rem;">
+    <div class="card-body p-5">
+      <h1 class="text-center mb-4 fw-bold text-primary">Crea tu diálogo</h1>
+      <p class="text-center text-muted mb-4">Inicia tu obra maestra describiendo el título y la idea base o resumen.</p>
+      
+      <form [formGroup]="setupForm" (ngSubmit)="onSubmit()">
+        <div class="mb-3">
+          <label for="title" class="form-label fw-semibold">Título</label>
+          <input type="text" id="title" class="form-control form-control-lg" formControlName="title" placeholder="________________________">
+          <div *ngIf="setupForm.get('title')?.touched && setupForm.get('title')?.invalid" class="text-danger small mt-1">
+            Se requiere 3 caracteres al menos.
+          </div>
+        </div>
+        
+        <div class="mb-4">
+          <label for="summary" class="form-label fw-semibold">Resumen</label>
+          <textarea id="summary" class="form-control" rows="4" formControlName="summary" placeholder="________________________"></textarea>
+          <div *ngIf="setupForm.get('summary')?.touched && setupForm.get('summary')?.invalid" class="text-danger small mt-1">
+            Se requiere 10 caracteres al menos.
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 btn-lg rounded-pill" [disabled]="setupForm.invalid || isSubmitting">
+          <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+          {{ isSubmitting ? 'Creando...' : 'Iniciar' }}
+        </button>
+      </form>
+
+      <hr class="my-4">
+
+      <h5 class="text-center mb-3 text-secondary">Continuar historia existente</h5>
+      
+      <div class="list-group list-group-flush" style="max-height: 200px; overflow-y: auto;">
+        <a *ngFor="let story of stories$ | async" [routerLink]="['/writer', story.id]" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+          <div>
+            <div class="fw-bold">{{ story.title }}</div>
+            <small class="text-muted text-truncate d-block" style="max-width: 250px;">{{ story.summary }}</small>
+          </div>
+          <i class="bi bi-chevron-right text-muted"></i>
+        </a>
+        <div *ngIf="(stories$ | async)?.length === 0" class="text-center text-muted small p-2">
+          No hay historias guardadas aún.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

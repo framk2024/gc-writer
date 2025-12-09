@@ -1,0 +1,91 @@
+<div class="container-fluid vh-100 d-flex flex-column bg-light p-0">
+  <!-- Header -->
+  <header class="bg-white border-bottom p-3 d-flex justify-content-between align-items-center shadow-sm">
+    <div class="d-flex align-items-center">
+      <a routerLink="/" class="btn btn-outline-secondary me-2"><i class="bi bi-arrow-left"></i></a>
+    </div>
+    <div>
+      <button class="btn btn-outline-primary me-1" data-bs-toggle="modal" data-bs-target="#characterModal">
+        <i class="bi bi-people"></i>
+      </button>
+      <button class="btn btn-outline-info me-1" (click)="copyLink()">
+        <i class="bi bi-share"></i>
+      </button>
+      <button class="btn btn-success" (click)="exportPdf()">
+        <i class="bi bi-file-earmark-pdf"></i>
+      </button>
+    </div>
+  </header>
+
+  <div class="flex-grow-1 d-flex overflow-hidden">
+    <!-- Main Chat Area -->
+    <main class="flex-grow-1 d-flex flex-column position-relative">
+      <div class="flex-grow-1 overflow-auto p-4" id="chat-container">
+        <ng-container *ngIf="dialogues$ | async as dialogues">
+          <ng-container *ngIf="characters$ | async as characters">
+            <div *ngFor="let msg of dialogues" class="mb-3 d-flex" 
+                 [ngClass]="{'justify-content-start': !getCharacter(msg.characterId, characters)?.isNarrator, 
+                             'justify-content-center': getCharacter(msg.characterId, characters)?.isNarrator}">
+              
+              <!-- Narrator Style -->
+              <div *ngIf="getCharacter(msg.characterId, characters)?.isNarrator" class="text-center w-75">
+                <small class="text-muted d-block mb-1">Narrador</small>
+                <div class="p-2 rounded bg-secondary text-white fst-italic shadow-sm">
+                  {{ msg.text }}
+                </div>
+              </div>
+
+              <!-- Character Style -->
+              <div *ngIf="!getCharacter(msg.characterId, characters)?.isNarrator" class="d-flex flex-column" style="max-width: 70%;">
+                <div class="d-flex align-items-end"> 
+                   <!-- Actually, let's put all chars on left except 'me'? No, this is a writer tool. 
+                        Let's put the selected character on the right? Or just standard chat style: 
+                        Maybe distinct colors for characters. -->
+                   
+                   <div class="card border-0 shadow-sm" [style.background-color]="getCharacter(msg.characterId, characters)?.color || '#fff'">
+                     <div class="card-body p-2">
+                       <small class="fw-bold d-block text-secondary mb-1">{{ getCharacter(msg.characterId, characters)?.name }}</small>
+                       {{ msg.text }}
+                     </div>
+                   </div>
+                </div>
+              </div>
+
+            </div>
+          </ng-container>
+        </ng-container>
+      </div>
+
+      <!-- Input Area -->
+      <div class="p-3 bg-white border-top">
+        <div class="input-group">
+          <select class="form-select" style="max-width: 150px;" [(ngModel)]="selectedCharacterId">
+            <option [ngValue]="null">Personaje</option>
+            <option *ngFor="let char of characters$ | async" [value]="char.id">
+              {{ char.name }} {{ char.isNarrator ? '(Narrador)' : '' }}
+            </option>
+          </select>
+          <input type="text" class="form-control" placeholder="Post..." [(ngModel)]="newMessage" (keyup.enter)="sendMessage()">
+          <button class="btn btn-primary" (click)="sendMessage()" [disabled]="!selectedCharacterId || !newMessage">
+            <i class="bi bi-send"></i>
+          </button>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Character Modal Placeholder -->
+<div class="modal fade" id="characterModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Characters</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <app-character-list [storyId]="storyId"></app-character-list>
+      </div>
+    </div>
+  </div>
+</div>
