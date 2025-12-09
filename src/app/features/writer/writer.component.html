@@ -65,6 +65,9 @@
               {{ char.name }} {{ char.isNarrator ? '(Narrador)' : '' }}
             </option>
           </select>
+          <button class="btn btn-outline-secondary" (click)="startListening()" [class.btn-danger]="isListening" [class.btn-outline-secondary]="!isListening" type="button" title="Dictar voz">
+            <i class="bi" [ngClass]="isListening ? 'bi-mic-fill' : 'bi-mic'"></i>
+          </button>
           <input type="text" class="form-control" placeholder="Post..." [(ngModel)]="newMessage" (keyup.enter)="sendMessage()">
           <button class="btn btn-primary" (click)="sendMessage()" [disabled]="!selectedCharacterId || !newMessage">
             <i class="bi bi-send"></i>

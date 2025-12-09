@@ -77,4 +77,41 @@ export class WriterComponent implements OnInit {
       alert('Enlace copiado al portapapeles. ¡Compártelo para colaborar!');
     });
   }
+
+  // Voice Interaction
+  isListening = false;
+
+  startListening() {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+      alert('Tu navegador no soporta reconocimiento de voz. Prueba Chrome o Safari.');
+      return;
+    }
+
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+
+    recognition.lang = 'es-ES'; // Spanish by default, could be configurable
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => {
+      this.isListening = true;
+    };
+
+    recognition.onend = () => {
+      this.isListening = false;
+    };
+
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      this.newMessage = (this.newMessage ? this.newMessage + ' ' : '') + transcript;
+    };
+
+    recognition.onerror = (event: any) => {
+      console.error('Speech recognition error:', event.error);
+      this.isListening = false;
+    };
+
+    recognition.start();
+  }
 }
